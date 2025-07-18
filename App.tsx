@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, Text, Button, View, Image, TouchableOpacity } from 'react-native';
 
+import messaging from '@react-native-firebase/messaging';
+import { AppState } from 'react-native';
+
 import Contenido from './src/components/Contenido';
 import { getNoticiasApi } from './src/api/noticias';
 import { getOfertasApi } from './src/api/ofertas';
@@ -8,6 +11,28 @@ import { getCursosApi } from './src/api/cursos';
 
 export default function App() {
   const [menu, setMenu] = useState("home");
+
+  //Para escuchar las notificaiones de Firebase
+  useEffect(() => {
+    // App cerrada → abrir desde notificación
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage?.data?.target) {
+          cambiarContenido(remoteMessage.data.target);
+        }
+      });
+
+    // App en segundo plano → notificación abierta
+    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage?.data?.target) {
+        cambiarContenido(remoteMessage.data.target);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
+
 
   const [noticias, setNoticias] = useState(null);
   const [ofertas, setOfertas] = useState(null);

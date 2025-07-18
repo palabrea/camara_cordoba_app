@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "873256345625",
+    "project_id": "camara-cordoba-notificaciones",
+    "storage_bucket": "camara-cordoba-notificaciones.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873256345625:android:4a8d1422fa05c6e2efca88",
+        "android_client_info": {
+          "package_name": "com.aplicacionv1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArtZ1eUOs2jaqghu2Vd4t6IgpDuSzX8D8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873256345625:android:4c4c04e0d8b6a117efca88",
+        "android_client_info": {
+          "package_name": "com.camaraemplea.app.camara_cordoba_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArtZ1eUOs2jaqghu2Vd4t6IgpDuSzX8D8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
