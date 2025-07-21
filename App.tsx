@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, Text, Button, View, Image, TouchableOpacity } from 'react-native';
 
-import messaging from '@react-native-firebase/messaging';
+import {
+  getMessaging,
+  getInitialNotification,
+  onMessage,
+  onNotificationOpenedApp,
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
+
 import { AppState } from 'react-native';
 
 import Contenido from './src/components/Contenido';
@@ -9,28 +16,50 @@ import { getNoticiasApi } from './src/api/noticias';
 import { getOfertasApi } from './src/api/ofertas';
 import { getCursosApi } from './src/api/cursos';
 
+import { Alert } from 'react-native';
+
 export default function App() {
   const [menu, setMenu] = useState("home");
 
   //Para escuchar las notificaiones de Firebase
   useEffect(() => {
-    // App cerrada → abrir desde notificación
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage?.data?.target) {
-          cambiarContenido(remoteMessage.data.target);
-        }
-      });
+    const messaging = getMessaging();
 
-    // App en segundo plano → notificación abierta
-    const unsubscribe = messaging().onNotificationOpenedApp(remoteMessage => {
-      if (remoteMessage?.data?.target) {
-        cambiarContenido(remoteMessage.data.target);
+    // App cerrada
+    getInitialNotification(messaging).then(remoteMessage => {
+      const tipo = remoteMessage?.data?.target;
+      if (tipo) {
+        cambiarContenido(tipo);
       }
     });
 
-    return unsubscribe;
+    // App en segundo plano
+    const unsubscribeOpened = onNotificationOpenedApp(messaging, remoteMessage => {
+      const tipo = remoteMessage?.data?.target;
+      if (tipo) {
+        cambiarContenido(tipo);
+      }
+    });
+
+    // App en primer plano
+    const unsubscribeForeground = onMessage(messaging, async remoteMessage => {
+      const tipo = remoteMessage?.data?.target;
+      if (tipo) {
+        Alert.alert(
+          "Nueva información disponible",
+          `Hay nuevas ${tipo}. ¿Quieres verla?`,
+          [
+            { text: "Más tarde", style: "cancel" },
+            { text: "Ver ahora", onPress: () => cambiarContenido(tipo) }
+          ]
+        );
+      }
+    });
+
+    return () => {
+      unsubscribeOpened();
+      unsubscribeForeground();
+    };
   }, []);
 
 
@@ -40,7 +69,7 @@ export default function App() {
 
 
   const cambiarContenido = (tipo) => {
-    console.log("menu"+tipo);
+    console.log("🔔 Notificación recibida, cambiando a:", tipo);
     if (tipo == "ofertas"){
       
     } 
