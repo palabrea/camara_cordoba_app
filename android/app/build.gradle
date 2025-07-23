@@ -79,8 +79,8 @@ android {
         applicationId "com.aplicacionv1"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "3.6"
     }
     signingConfigs {
         debug {

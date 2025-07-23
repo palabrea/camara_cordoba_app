@@ -1,77 +1,47 @@
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import React from 'react';
-import { estilosItem } from '../utils/estilosItems';
-import { create } from 'react-test-renderer';
 
-export default function Home(props) {
-  const { contenido } = props;
+
+export default function Home({ contenido }) {
+  const banners = [
+    { src: require('../images/banner_noticias_rojo.png'), target: 'noticias' },
+    { src: require('../images/banner_empleo_azul.png'), target: 'ofertas' },
+    { src: require('../images/banner_cursos_naranja.png'), target: 'cursos' },
+  ];
+
   return (
-    <View>
-      <TouchableOpacity
-        style={estilosBanner.contenedorBanner}
-        onPress={() => contenido('noticias')}>
-        <View style={estilosBanner.subcontenedorBanner}>
-          <Image
-            style={estilosBanner.banner}
-            source={require('../images/banner_noticias.jpg')}
-            resizeMethod="scale"
-          />
-        </View>
-        <View style={estilosBanner.subcontenedorTexto}>
-          <Text style={[estilosItem.url, { textAlign: 'right' }]}>
-            www.camaracordoba.com
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={estilosBanner.contenedorBanner}
-        onPress={() => contenido('ofertas')}>
-        <View style={estilosBanner.subcontenedorBanner}>
-          <Image
-            style={estilosBanner.banner}
-            source={require('../images/banner_ofertas.jpg')}
-            resizeMethod="scale"
-          />
-        </View>
-        <View style={estilosBanner.subcontenedorTexto}>
-          <Text style={[estilosItem.url, { textAlign: 'right' }]}>
-            www.camaraemplea.com
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={estilosBanner.contenedorBanner}
-        onPress={() => contenido('cursos')}>
-        <View style={estilosBanner.subcontenedorBanner}>
-          <Image
-            style={estilosBanner.banner}
-            source={require('../images/banner_cursos.jpg')}
-            resizeMethod="scale"
-          />
-        </View>
-        <View style={estilosBanner.subcontenedorTexto}>
-          <Text style={[estilosItem.url, { textAlign: 'right' }]}>
-            www.camaraformaa.com
-          </Text>
-        </View>
-      </TouchableOpacity>
+  <ImageBackground
+        source={require('../images/fondo.jpg')}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+    <View style={styles.container}>
+      
+      {banners.map((banner, index) => (
+        <TouchableOpacity key={index} onPress={() => contenido(banner.target)}>
+          <Image source={banner.src} style={styles.banner} resizeMode="contain" />
+        </TouchableOpacity>
+      ))}
     </View>
+      </ImageBackground>
   );
 }
 
-const estilosBanner = StyleSheet.create({
-  contenedorBanner: {
-    paddingTop: 15,
-    backgroundColor: 'white',
+const { height, width } = Dimensions.get('window');
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    paddingVertical: height * 0.04, // 5% del alto de pantalla
+   /* backgroundColor: 'blue',*/
   },
-  subcontenedorBanner: {
-    paddingHorizontal: 10,
-  },
-  subcontenedorTexto: {
-    paddingHorizontal: 10,
-  },
+
   banner: {
-    width: '100%',
-    height: 180,
+    width: width * 0.9,
+    height: height * 0.2,
+    marginVertical: height * 0.02, // ligera separación entre imágenes
   },
 });
+

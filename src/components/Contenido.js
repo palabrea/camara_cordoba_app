@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet,Image, Share } from 'react-native';
 
 // *** LIBRERIAS AÑADIDAS CON  YARN *********************
 import { map } from 'lodash'; //motrar bloques de la api (noticias, ofertas,..)
@@ -13,95 +13,135 @@ import { getOfertasApi } from '../api/ofertas';
 import Curso from '../components/Curso';
 import { getCursosApi } from '../api/cursos';
 
+
 export default function Contenido(props) {
   const { noticias, ofertas, cursos, mostrar, contenido } = props;
 
-  /*useEffect(() => {
-    getNoticiasApi().then(response => {
-      //console.log(response.data);
-      setNoticias(response.data);
-    });
+  const compartir = async (titulo, url) => {
+    try {
+      await Share.share({
+        message: `📢 ${titulo}\n${url}`,
+      });
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo compartir el contenido');
+    }
+  };
 
-    return () => {};
-  }, []);
 
-  //const [ofertas, setOfertas] = useState(null);
-  useEffect(() => {
-    getOfertasApi().then(response => {
-      console.log('obteniendo ofertas');
-      setOfertas(response.data);
-    });
+  const secciones = {
+    noticias: {
+      color: '#c6002d',
+      titulo: 'NOTICIAS',
+      icono: require('../images/icono_blanco_noticias.png'),
+    },
+    cursos: {
+      color: '#e2890c',
+      titulo: 'FÓRMATE',
+      icono: require('../images/icono_blanco_formacion.png'),
+    },
+    ofertas: {
+      color: '#1270c7',
+      titulo: 'EMPLEO',
+      icono: require('../images/icono_blanco_empleo.png'),
+    },
+  };
 
-    return () => {};
-  }, []);
-
-  useEffect(() => {
-    getCursosApi().then(response => {
-      //console.log(response.data);
-      setCursos(response.data);
-    });
-
-    return () => {};
-  }, []);*/
+  const cabecera = secciones[mostrar];
 
   console.log({mostrar});
-  if (mostrar == 'noticias') {
-    if (!noticias) return null;
-
+  
+  if (mostrar === 'home') {
     return (
-      <ScrollView style={styles.scrollView} >
-        <Text style={styles.title}>Últimas Noticias</Text>
-        {map(noticias, (datos) => (
-          <Noticia key={datos.id} contenido={datos.attributes} />
-        ))}
-      </ScrollView>
-    );
-  } else if (mostrar == 'ofertas') {
-    if (!ofertas) return null;
-
-    return (
-      <ScrollView style={styles.scrollView} >
-        <Text style={styles.title}>Últimas Ofertas de Empleo</Text>
-        {map(ofertas, (datos) => (
-          <Oferta key={datos.id} contenido={datos.attributes} />
-        ))}
-      </ScrollView>
-    );
-  } else if (mostrar == 'cursos') {
-    if (!cursos) return null;
-
-    return (
-      <ScrollView style={styles.scrollView} >
-        <Text style={styles.title}>Últimas Cursos de Formación</Text>
-        {map(cursos, (datos) => (
-          <Curso key={datos.id} contenido={datos.attributes} />
-        ))}
-      </ScrollView>
-    );
-  } else {
-    return (
-      <ScrollView style={styles.scrollView} >
+      <ScrollView style={styles.scrollView}>
         <Home contenido={contenido} />
       </ScrollView>
     );
   }
+
+  const items = mostrar === 'noticias' ? noticias
+              : mostrar === 'ofertas' ? ofertas
+              : mostrar === 'cursos' ? cursos
+              : null;
+
+  const ItemComponent = mostrar === 'noticias' ? Noticia
+                      : mostrar === 'ofertas' ? Oferta
+                      : Curso;
+
+  if (!items) return null;
+
+   // 🔸 Para dividir en filas de 2 elementos
+  const chunk = (arr, size) => {
+    const result = [];
+    for (let i = 0; i < arr.length; i += size) {
+      result.push(arr.slice(i, i + size));
+    }
+    return result;
+  };
+
+  return (
+    <ScrollView style={styles.scrollView}>
+      {cabecera && (
+        <View style={[styles.franja, { backgroundColor: cabecera.color }]}>
+          <Image source={cabecera.icono} style={styles.icono} />
+          <Text style={styles.titulo}>{cabecera.titulo}</Text>
+        </View>
+      )}
+
+      {mostrar === 'cursos' || mostrar === 'noticias' ? (
+        <View style={styles.grid}>
+          {chunk(items, 2).map((fila, filaIndex) => (
+            <View key={filaIndex} style={styles.fila}>
+              {fila.map((item) => {
+                const Item = ItemComponent;
+                return <Item key={item.id} contenido={item.attributes} compartir={compartir} />;
+              })}
+            </View>
+          ))}
+        </View>
+      ) : (
+        map(items, (datos) => {
+          const Component = mostrar === 'ofertas' ? Oferta : ItemComponent;
+          return (
+            <Component
+              key={datos.id}
+              contenido={datos.attributes}
+              compartir={compartir}
+            />
+          );
+        })
+      )}
+    </ScrollView>
+  );
+
 }
 
 const styles = StyleSheet.create({
-  title: {
-    textAlign: 'left',
-    fontSize: 18,
-    paddingTop: 10,
-    paddingBottom: 5,
-    paddingHorizontal: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: 'grey',
-    marginLeft: 10,
-    marginRight: 12,
-    marginBottom: 5,
-  },
   scrollView: {
-    backgroundColor: '#efefef',
-    height: '90%',
+    backgroundColor: '#ffffff',
+  },
+  franja: {
+    height: 80,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  icono: {
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
+    marginRight: 8,
+  },
+  titulo: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+  grid: {
+    paddingHorizontal: 10,
+  },
+  fila: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

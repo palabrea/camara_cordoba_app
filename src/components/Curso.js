@@ -4,49 +4,78 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Linking,
-  Alert,
   Image,
 } from 'react-native';
-import { estilosItem } from '../utils/estilosItems';
 import { openUrlInApp } from '../utils/funciones';
 
-// **** DEPENDENCIAS O LIBRERIAS INSTALADAS APARTE CON YARN //
-import urlParse from 'url-parse'; //manejar url instalados de yarn
-import moment from 'moment'; //manejar fechas instalados de yarn
-import es from 'moment/locale/es'; //manejar fechas instalados de yarn
+import urlParse from 'url-parse';
+import moment from 'moment';
+import es from 'moment/locale/es';
 
-export default function Curso(props) {
-  /*console.log("Cursos----");
-  console.log(props);*/
-  const {
-    contenido: {url, titulo, fecha, imagen}
-  } = props;
+export default function Curso({ contenido, compartir }) {
+  const { url, titulo, fecha, imagen } = contenido;
 
   const abrirURL = () => {
     openUrlInApp(url);
   };
 
   return (
-    <TouchableOpacity
-      style={[estilosItem.contenedorNoticiaPrincipal, estilosItem.boxShadow]}
-      onPress={abrirURL}>
-      <View>
-        <Text style={estilosItem.url}>{urlParse(url).host}</Text>
-      </View>
-      <View style={estilosItem.contenedorNoticiaSecundario}>
+    <TouchableOpacity style={styles.curso} onPress={abrirURL}>
+      <Image
+        source={{ uri: imagen }}
+        style={styles.imagen}
+        resizeMode="cover"
+      />
+      <Text style={styles.titulo}>{titulo}</Text>
+      <Text style={styles.fecha}>{moment(fecha).local(es).startOf().fromNow()}</Text>
+
+      {/* Botón compartir */}
+      <TouchableOpacity onPress={() => compartir(titulo, url)} style={styles.botonCompartir}>
         <Image
-          style={estilosItem.imagencurso}
-          source={{
-            uri: imagen,
-          }}
-          resizeMethod='scale'
+          source={require('../images/icono_compartir.png')}
+          style={styles.iconoCompartir}
         />
-        <View style={[estilosItem.noticia]}>
-          <Text style={estilosItem.titulo}>{titulo}</Text>
-          <Text style={estilosItem.url}>{moment(fecha).local(es).startOf().fromNow()}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  curso: {
+    flex: 1,
+    margin: 8,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    elevation: 2,
+    position: 'relative',
+  },
+  imagen: {
+    width: '100%',
+    aspectRatio: 2.7 / 4, // vertical tipo cartel
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  titulo: {
+    padding: 8,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  fecha: {
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    fontSize: 12,
+    color: '#888',
+  },
+  botonCompartir: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    padding: 4,
+  },
+  iconoCompartir: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+});

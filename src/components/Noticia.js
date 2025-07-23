@@ -4,8 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Linking,
-  Alert,
   Image,
 } from 'react-native';
 import { estilosItem } from '../utils/estilosItems';
@@ -16,35 +14,71 @@ import urlParse from 'url-parse'; //manejar url instalados de yarn
 import moment from 'moment'; //manejar fechas instalados de yarn
 import es from 'moment/locale/es'; //manejar fechas instalados de yarn
 
-export default function Noticia(props) {
-  /*console.log(props);*/
-  const {
-    contenido: {url, titulo, imagen, fecha},
-  } = props;
+export default function Noticia({ contenido, compartir }) {
+    const { url, titulo, fecha, imagen } = contenido;
+
 
   const abrirURL = () => {
     openUrlInApp(url);
   };
 
   return (
-    <TouchableOpacity
-      style={[estilosItem.contenedorNoticiaPrincipal, estilosItem.boxShadow]}
-      onPress={abrirURL}>
-      <View>
-        <Text style={estilosItem.url}>{urlParse(url).host}</Text>
-      </View>
-      <View style={estilosItem.contenedorNoticiaSecundario}>
+    <TouchableOpacity style={styles.noticia} onPress={abrirURL}>
+      <Image
+        source={{ uri: imagen }}
+        style={styles.imagennoticia}
+        resizeMode="cover"
+      />
+      <Text style={styles.titulo}>{titulo}</Text>
+      <Text style={styles.fecha}>{moment(fecha).local(es).startOf().fromNow()}</Text>
+      {/* Botón compartir */}
+      <TouchableOpacity onPress={() => compartir(titulo, url)} style={styles.botonCompartir}>
         <Image
-          style={estilosItem.imagen}
-          source={{
-            uri: imagen,
-          }}
+          source={require('../images/icono_compartir.png')}
+          style={styles.iconoCompartir}
         />
-        <View style={[estilosItem.noticia]}>
-          <Text style={estilosItem.titulo}>{titulo}</Text>
-          <Text style={estilosItem.url}>{moment(fecha).local(es).startOf().fromNow()}</Text>
-        </View>
-      </View>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  noticia: {
+    flex: 1,
+    margin: 8,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    elevation: 2,
+  },
+  imagennoticia: {
+    width: '100%',
+    aspectRatio: 4 / 3, // Relación horizontal, tipo noticia (ancho : alto)
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+
+  titulo: {
+    padding: 8,
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  fecha: {
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    fontSize: 12,
+    color: '#888',
+  },
+  
+  botonCompartir: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    padding: 4,
+  },
+  iconoCompartir: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
+  },
+});

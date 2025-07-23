@@ -98,92 +98,100 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      {/* Cabecera solo con logo */}
       <View style={styles.cabecera}>
-        <TouchableOpacity 
-          style={styles.contenedorBoton}
-          onPress={() => {
-            cambiarContenido('home');
-          }}>
-          <Image
-            style={styles.logo}
-            source={require('./src/images/logo.png')}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.contenedorBoton}
-          onPress={() => {
-            cambiarContenido('noticias');
-          }}>
-          <Image
-            style={styles.boton}
-            source={require('./src/images/icono_noticias.png')}
-          />
+      <TouchableOpacity onPress={() => cambiarContenido('home')}>
+        <Image
+          style={styles.logo}
+          source={require('./src/images/logo.png')}
+        />
+      </TouchableOpacity>
+    </View>
+
+      {/* Contenido central */}
+      <View style={styles.contenido}>
+        <Contenido
+          noticias={noticias}
+          ofertas={ofertas}
+          cursos={cursos}
+          mostrar={menu}
+          contenido={cambiarContenido}
+        />
+      </View>
+
+      {/* Footer con botones */}
+      <View style={styles.footer}>
+        <View style={styles.line} />
+        <TouchableOpacity onPress={() => cambiarContenido('noticias')} style={styles.botonFooter}>
+          <Image source={require('./src/images/icono_noticias_rojo.png')} style={styles.boton} />
           <Text style={styles.textoBoton}>Noticias</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.contenedorBoton}
-          onPress={() => {
-            cambiarContenido('ofertas');
-          }}>
-          <Image
-            style={styles.boton}
-            source={require('./src/images/icono_empleo.png')}
-          />
+        <TouchableOpacity onPress={() => cambiarContenido('ofertas')} style={styles.botonFooter}>
+          <Image source={require('./src/images/icono_empleo_azul.png')} style={styles.boton} />
           <Text style={styles.textoBoton}>Empleo</Text>
         </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.contenedorBoton}
-          onPress={() => {
-            cambiarContenido('cursos');
-          }}>
-          <Image
-            style={styles.boton}
-            source={require('./src/images/icono_formacion.png')}
-          />
+        <TouchableOpacity onPress={() => cambiarContenido('cursos')} style={styles.botonFooter}>
+          <Image source={require('./src/images/icono_cursos_naranja.png')} style={styles.boton} />
           <Text style={styles.textoBoton}>Fórmate</Text>
         </TouchableOpacity>
+        <View style={styles.line} />
       </View>
-      <Contenido
-        noticias={noticias}
-        ofertas={ofertas}
-        cursos={cursos}
-        mostrar={menu}
-        contenido={cambiarContenido}
-      />
     </SafeAreaView>
   );
+
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   cabecera: {
-    paddingVertical: 10,
-    flexDirection: 'row',
+    paddingVertical: 20,
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#bc3440',
   },
   logo: {
-    width: 100,
-    height: 27,
-    resizeMode: 'stretch',
-    alignSelf: 'center',
+    width: 130,
+    height: 35,
+    resizeMode: 'contain',
   },
-  contenedorBoton: {
-    paddingHorizontal: 20,
-    justifyContent: 'center',
+  contenido: {
+    flex: 1,
+  },
+
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    /*borderTopWidth: 1,
+    borderTopColor: '#bc3440',*/
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    backgroundColor: '#fff',
   },
   boton: {
-    width: 24,
-    height: 24,
-    resizeMode: 'stretch',
+    width: 42,
+    height: 42,
+    resizeMode: 'contain',
     alignSelf: 'center',
+    marginHorizontal: 15,
+
+  },
+  botonFooter: {
+    alignItems: 'center',
   },
   textoBoton: {
     fontSize: 12,
+    marginTop: 4,
   },
-  menu: {
+  line: {
+    height: 1.5,
+    flex: 1,
     backgroundColor: '#bc3440',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  }
+    marginHorizontal: 10,
+  },
 });
+
