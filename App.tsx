@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, Text, Button, View, Image, TouchableOpacity } from 'react-native';
 
-import {
-  getMessaging,
-  getInitialNotification,
-  onMessage,
-  onNotificationOpenedApp,
-  FirebaseMessagingTypes,
-} from '@react-native-firebase/messaging';
-
+// Actualiza las importaciones a la API modular
+import { getMessaging, getInitialNotification, onMessage, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { AppState } from 'react-native';
 
 import Contenido from './src/components/Contenido';
@@ -17,13 +11,25 @@ import { getOfertasApi } from './src/api/ofertas';
 import { getCursosApi } from './src/api/cursos';
 
 import { Alert } from 'react-native';
+import { requestPermission  } from '@react-native-firebase/messaging';
 
 export default function App() {
   const [menu, setMenu] = useState("home");
 
-  //Para escuchar las notificaiones de Firebase
+  
+
+  // Para escuchar las notificaciones de Firebase
   useEffect(() => {
-    const messaging = getMessaging();
+    const messaging = getMessaging();  // Obtén el servicio de mensajería con la nueva API
+
+    // Solicitar permisos de notificación
+    requestPermission(messaging)
+    .then(() => {
+      console.log('Permisos de notificación concedidos');
+    })
+    .catch((error) => {
+      console.log('Permisos de notificación denegados', error);
+    });
 
     // App cerrada
     getInitialNotification(messaging).then(remoteMessage => {
@@ -47,7 +53,7 @@ export default function App() {
       if (tipo) {
         Alert.alert(
           "Nueva información disponible",
-          `Hay nuevas ${tipo}. ¿Quieres verla?`,
+          `Hay nuevas ${tipo}. ¿Quieres verlas?`,
           [
             { text: "Más tarde", style: "cancel" },
             { text: "Ver ahora", onPress: () => cambiarContenido(tipo) }
@@ -62,33 +68,31 @@ export default function App() {
     };
   }, []);
 
-
   const [noticias, setNoticias] = useState(null);
   const [ofertas, setOfertas] = useState(null);
   const [cursos, setCursos] = useState(null);
 
-
   const cambiarContenido = (tipo) => {
     console.log("🔔 Notificación recibida, cambiando a:", tipo);
-    if (tipo == "ofertas"){
-      
-    } 
+    if (tipo == "ofertas") {
+      // Cambia el contenido basado en el tipo recibido
+    }
     switch (tipo) {
       case 'ofertas':
         getOfertasApi().then(response => {
-          console.log('obteniendo ofertas al cambiar contenido');
+          console.log('Obteniendo ofertas al cambiar contenido');
           setOfertas(response.data);
         });
         break;
       case 'noticias':
         getNoticiasApi().then(response => {
-          console.log('obteniendo noticias al cambiar contenido');
+          console.log('Obteniendo noticias al cambiar contenido');
           setNoticias(response.data);
         });
         break;
       case 'cursos':
         getCursosApi().then(response => {
-          console.log('obteniendo cursos al cambiar contenido');
+          console.log('Obteniendo cursos al cambiar contenido');
           setCursos(response.data);
         });
         break;
@@ -101,13 +105,13 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       {/* Cabecera solo con logo */}
       <View style={styles.cabecera}>
-      <TouchableOpacity onPress={() => cambiarContenido('home')}>
-        <Image
-          style={styles.logo}
-          source={require('./src/images/logo.png')}
-        />
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity onPress={() => cambiarContenido('home')}>
+          <Image
+            style={styles.logo}
+            source={require('./src/images/logo.png')}
+          />
+        </TouchableOpacity>
+      </View>
 
       {/* Contenido central */}
       <View style={styles.contenido}>
@@ -139,7 +143,6 @@ export default function App() {
       </View>
     </SafeAreaView>
   );
-
 }
 
 const styles = StyleSheet.create({
@@ -166,8 +169,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    /*borderTopWidth: 1,
-    borderTopColor: '#bc3440',*/
     paddingVertical: 10,
     paddingHorizontal: 24,
     backgroundColor: '#fff',
@@ -178,7 +179,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignSelf: 'center',
     marginHorizontal: 15,
-
   },
   botonFooter: {
     alignItems: 'center',
@@ -194,4 +194,3 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
-
