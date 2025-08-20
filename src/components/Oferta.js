@@ -30,25 +30,30 @@ export default function Oferta({ contenido, compartir }) {
   };
 
   var imagenLocal;
+  var estadoTexto = estado;
+  
+  switch (estado) {
+    case 'Abierta':
+      imagenLocal = require('../images/icono_ofertaAbierta.png');
+      estadoTexto = 'Oferta Abierta';
+      break;
+    case 'Enviados':
+      imagenLocal = require('../images/icono_ofertaEnviados.png');
+      estadoTexto = 'Oferta con candidaturas presentadas';
+      break;
+    case 'Finalizada':
+      imagenLocal = require('../images/icono_ofertaFinalizada.png');
+      estadoTexto = 'Oferta Finalizada';
+      break;
+    default:
+      imagenLocal = require('../images/icono_ofertaAbierta.png');
+      estadoTexto = 'Oferta Finalizada';
+      break;
+  }
   if (imagen) {
     imagenLocal = {
       uri: imagen,
     };
-  } else {
-    switch (estado) {
-      case 'Abierta':
-        imagenLocal = require('../images/icono_ofertaAbierta.png');
-        break;
-      case 'Enviados':
-        imagenLocal = require('../images/icono_ofertaEnviados.png');
-        break;
-      case 'Finalizada':
-        imagenLocal = require('../images/icono_ofertaFinalizada.png');
-        break;
-      default:
-        imagenLocal = require('../images/icono_ofertaAbierta.png');
-        break;
-    }
   }
   if (typeof compartir !== 'function') {
     console.error('❌ compartir no es función:', compartir);
@@ -61,7 +66,7 @@ export default function Oferta({ contenido, compartir }) {
         </View>
         <View style={styles.texto}>
           <Text style={styles.titulo}>{titulo}</Text>
-          <Text style={styles.subtitulo}>ESTADO: {estado}</Text>
+          <Text style={styles.subtitulo}>{estadoTexto}</Text>
           <Text style={styles.fecha}>{moment(fecha).local(es).startOf().fromNow()}</Text>
         </View>
         {/* Botón compartir */}

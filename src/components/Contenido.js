@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet,Image, Share } from 'react-native';
+import { View, Text, ScrollView, StyleSheet,Image, Share, RefreshControl,Alert } from 'react-native';
+import { sortByDateDesc } from '../utils/sortByDateDesc';
+
 
 // *** LIBRERIAS AÑADIDAS CON  YARN *********************
 import { map } from 'lodash'; //motrar bloques de la api (noticias, ofertas,..)
@@ -7,15 +9,12 @@ import { map } from 'lodash'; //motrar bloques de la api (noticias, ofertas,..)
 // *** LIBRERIAS CREADAS **************************
 import Home from '../components/Home';
 import Noticia from '../components/Noticia';
-import { getNoticiasApi } from '../api/noticias';
 import Oferta from '../components/Oferta';
-import { getOfertasApi } from '../api/ofertas';
 import Curso from '../components/Curso';
-import { getCursosApi } from '../api/cursos';
 
 
 export default function Contenido(props) {
-  const { noticias, ofertas, cursos, mostrar, contenido } = props;
+  const { noticias, ofertas, cursos, mostrar, contenido, onRefresh, refreshing } = props;
 
   const compartir = async (titulo, url) => {
     try {
@@ -67,7 +66,11 @@ export default function Contenido(props) {
                       : mostrar === 'ofertas' ? Oferta
                       : Curso;
 
+
   if (!items) return null;
+  
+  
+  const sortedItems = sortByDateDesc(items, mostrar);
 
    // 🔸 Para dividir en filas de 2 elementos
   const chunk = (arr, size) => {
@@ -79,7 +82,13 @@ export default function Contenido(props) {
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView style={styles.scrollView}  refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh} 
+        />
+      }
+    >
       {cabecera && (
         <View style={[styles.franja, { backgroundColor: cabecera.color }]}>
           <Image source={cabecera.icono} style={styles.icono} />
@@ -89,7 +98,7 @@ export default function Contenido(props) {
 
       {mostrar === 'cursos' || mostrar === 'noticias' ? (
         <View style={styles.grid}>
-          {chunk(items, 2).map((fila, filaIndex) => (
+          {chunk(sortedItems, 2).map((fila, filaIndex) => (
             <View key={filaIndex} style={styles.fila}>
               {fila.map((item) => {
                 const Item = ItemComponent;
@@ -99,7 +108,7 @@ export default function Contenido(props) {
           ))}
         </View>
       ) : (
-        map(items, (datos) => {
+        map(sortedItems, (datos) => {
           const Component = mostrar === 'ofertas' ? Oferta : ItemComponent;
           return (
             <Component

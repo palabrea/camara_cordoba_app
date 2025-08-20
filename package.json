@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-firebase/app": "^22.4.0",
     "@react-native-firebase/messaging": "^22.4.0",
     "lodash": "^4.17.21",
@@ -17,6 +18,7 @@
     "react": "18.2.0",
     "react-native": "^0.73.6",
     "react-native-inappbrowser-reborn": "^3.7.0",
+    "react-native-permissions": "^5.4.2",
     "url-parse": "^1.5.10"
   },
   "devDependencies": {
